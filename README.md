@@ -3,9 +3,9 @@
 [![Build Status](https://travis-ci.org/bbc/audiowaveform.svg?branch=master)](https://travis-ci.org/bbc/audiowaveform)
 
 **audiowaveform** is a C++ command-line application that generates waveform data
-from either MP3, WAV, or FLAC format audio files. Waveform data can be used to
-produce a visual rendering of the audio, similar in appearance to audio editing
-applications.
+from either MP3, WAV, FLAC, or Ogg Vorbis format audio files. Waveform data can
+be used to produce a visual rendering of the audio, similar in appearance to
+audio editing applications.
 
 ![Example Waveform](/doc/example.png "Example Waveform")
 
@@ -58,10 +58,19 @@ operating system releases.
 
 #### Fedora
 
-libmad is available from the RPM Fusion **free** repository. Before running the
-following `yum` command you should follow the instructions
-[here](http://rpmfusion.org/Configuration) to add this repository, if you have
-not already done so.
+    $ sudo dnf install git make cmake gcc-c++ libmad-devel \
+      libid3tag-devel libsndfile-devel gd-devel boost-devel
+
+#### CentOS
+
+If you have not already done so, you should follow the instructions
+[here](http://rpmfusion.org/Configuration) to add the RPM Fusion **free**
+repository. For example, for CentOS 7:
+
+    $ sudo yum localinstall --nogpgcheck \
+      https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+
+and then install the dependencies:
 
     $ sudo yum install git make cmake gcc-c++ libmad-devel \
       libid3tag-devel libsndfile-devel gd-devel boost-devel
@@ -69,9 +78,26 @@ not already done so.
 #### Ubuntu
 
     $ sudo apt-get install git make cmake gcc g++ libmad0-dev \
-      libid3tag0-dev libsndfile1-dev libgd2-xpm-dev libboost-filesystem-dev \
+      libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev \
       libboost-program-options-dev \
       libboost-regex-dev
+
+Note: for Ubuntu 12.04, replace libgd-dev with libgd2-xpm-dev.
+
+#### Alpine
+
+    $ apk add git make cmake gcc g++ libmad-dev \
+      libid3tag-dev libsndfile-dev gd-dev boost-dev
+
+#### SUSE
+
+    $ zypper install git cmake gcc-c++ libmad-devel \
+      libid3tag-devel libsndfile-devel gd-devel \
+      libboost_filesystem1_67_0-devel \
+      libboost_program_options1_67_0-devel \
+      libboost_regex1_67_0-devel
+
+Note: replace 1_67_0 with the boost version actually available.
 
 #### Mac OSX
 
@@ -106,8 +132,17 @@ in the Google Test FAQ, download the source and unzip:
     $ make
 
 The default build type is Release. To build in Debug mode add
-`-D CMAKE_BUILD_TYPE=Debug` to the `cmake` command above. If you don't want to
-compile the unit tests add `-D ENABLE_TESTS=0`.
+`-D CMAKE_BUILD_TYPE=Debug` to the `cmake` command above:
+
+    $ cmake -D CMAKE_BUILD_TYPE=Debug ..
+
+If you don't want to compile the unit tests add `-D ENABLE_TESTS=0`:
+
+    $ cmake -D ENABLE_TESTS=0 ..
+
+To statically link the library dependencies add `-D BUILD_STATIC=1`, for example:
+
+    $ cmake -D BUILD_STATIC=1 ..
 
 To compile with clang instead of g++:
 
@@ -236,4 +271,4 @@ chris.needham at bbc.co.uk.
 
 ## Copyright
 
-Copyright 2013-2017 British Broadcasting Corporation
+Copyright 2013-2018 British Broadcasting Corporation

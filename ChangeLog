@@ -1,3 +1,12 @@
+v1.2.2, 2018-06-23, Chris Needham <chris.needham@bbc.co.uk>
+
+  * Fixed MinGW build
+  * Updated Ubuntu package details
+
+v1.2.1, 2018-05-25, Chris Needham <chris.needham@bbc.co.uk>
+
+  * Added support for Ogg Vorbis audio
+
 v1.2.0, 2018-04-16, Chris Needham <chris.needham@bbc.co.uk>
 
   * Added --zoom auto option to automatically fit the waveform

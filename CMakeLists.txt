@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 #
-# Copyright 2013-2017 BBC Research and Development
+# Copyright 2013-2018 BBC Research and Development
 #
 # This file is part of Audio Waveform Image Generator.
 #
@@ -38,7 +38,8 @@ endif()
 message(STATUS "CMAKE_VERSION=${CMAKE_VERSION}")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
-set(CMAKE_MODULE_PATH "${audiowaveform_SOURCE_DIR}/cmake/modules")
+# Prepend our CMake modules directory
+list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/modules)
 message(STATUS "CMAKE_MODULE_PATH='${CMAKE_MODULE_PATH}'")
 
 include(SystemInfo)
@@ -67,32 +68,42 @@ message(STATUS "Building version ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PAT
 #
 #-------------------------------------------------------------------------------
 
+if(BUILD_STATIC)
+    message(STATUS "Static build")
+
+    if(WIN32)
+        set(CMAKE_FIND_LIBRARY_SUFFIXES .lib)
+    else()
+        set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
+    endif()
+endif(BUILD_STATIC)
+
 find_package(LibGD REQUIRED)
 if(LIBGD_FOUND)
-    message(STATUS "LIBGD_INCLUDE_DIR='${LIBGD_INCLUDE_DIR}'")
-    message(STATUS "LIBGD_LIBRARY=${LIBGD_LIBRARY}")
-    include_directories(${LIBGD_INCLUDE_DIR})
+    message(STATUS "LIBGD_INCLUDE_DIRS='${LIBGD_INCLUDE_DIRS}'")
+    message(STATUS "LIBGD_LIBRARIES=${LIBGD_LIBRARIES}")
+    include_directories(${LIBGD_INCLUDE_DIRS})
 endif(LIBGD_FOUND)
 
 find_package(LibSndFile REQUIRED)
 if(LIBSNDFILE_FOUND)
-    message(STATUS "LIBSNDFILE_INCLUDE_DIR='${LIBSNDFILE_INCLUDE_DIR}'")
-    message(STATUS "LIBSNDFILE_LIBRARY=${LIBSNDFILE_LIBRARY}")
-    include_directories(${LIBSNDFILE_INCLUDE_DIR})
+    message(STATUS "LIBSNDFILE_INCLUDE_DIRS='${LIBSNDFILE_INCLUDE_DIRS}'")
+    message(STATUS "LIBSNDFILE_LIBRARIES=${LIBSNDFILE_LIBRARIES}")
+    include_directories(${LIBSNDFILE_INCLUDE_DIRS})
 endif(LIBSNDFILE_FOUND)
 
 find_package(LibMad REQUIRED)
 if(LIBMAD_FOUND)
-    message(STATUS "LIBMAD_INCLUDE_DIR='${LIBMAD_INCLUDE_DIR}'")
-    message(STATUS "LIBMAD_LIBRARY=${LIBMAD_LIBRARY}")
-    include_directories(${LIBMAD_INCLUDE_DIR})
+    message(STATUS "LIBMAD_INCLUDE_DIRS='${LIBMAD_INCLUDE_DIRS}'")
+    message(STATUS "LIBMAD_LIBRARIES=${LIBMAD_LIBRARIES}")
+    include_directories(${LIBMAD_INCLUDE_DIRS})
 endif(LIBMAD_FOUND)
 
 find_package(LibId3Tag REQUIRED)
 if(LIBID3TAG_FOUND)
-    message(STATUS "LIBID3TAG_INCLUDE_DIR='${LIBID3TAG_INCLUDE_DIR}'")
-    message(STATUS "LIBID3TAG_LIBRARY=${LIBID3TAG_LIBRARY}")
-    include_directories(${LIBID3TAG_INCLUDE_DIR})
+    message(STATUS "LIBID3TAG_INCLUDE_DIRS='${LIBID3TAG_INCLUDE_DIRS}'")
+    message(STATUS "LIBID3TAG_LIBRARIES=${LIBID3TAG_LIBRARIES}")
+    include_directories(${LIBID3TAG_INCLUDE_DIRS})
 endif(LIBID3TAG_FOUND)
 
 find_package(Boost 1.46.0 COMPONENTS program_options filesystem regex system REQUIRED)
@@ -131,8 +142,7 @@ if(UNIX AND NOT APPLE AND NOT CYGWIN)
         set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
         set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${OF_SYSTEM_ARCH}")
 
-        set(PACKAGE_BOOST_VERSION "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}.${Boost_SUBMINOR_VERSION}")
-        set(CPACK_DEBIAN_PACKAGE_DEPENDS "libmad0 (>=0.15.1), libsndfile1 (>= 1.0.25), libgd2-xpm (>= 2.0.35), libboost-program-options${PACKAGE_BOOST_VERSION}, libboost-filesystem${PACKAGE_BOOST_VERSION}, libboost-regex${PACKAGE_BOOST_VERSION}")
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS "libmad0 (>=0.15.1), libsndfile1 (>= 1.0.25), libgd3 (>= 2.0.35) | libgd2-xpm (>= 2.0.35), libboost-program-options (>= 1.54.0), libboost-filesystem (>= 1.54.0), libboost-regex (>= 1.54.0")
 
         # http://www.debian.org/doc/manuals/debian-faq/ch-pkg_basics.en.html#s-pkgname
         # The Debian binary package file names conform to the following convention:
@@ -144,7 +154,7 @@ if(UNIX AND NOT APPLE AND NOT CYGWIN)
         set(CPACK_GENERATOR "RPM")
         set(CPACK_RPM_PACKAGE_GROUP "Applications/Multimedia")
         set(CPACK_RPM_PACKAGE_ARCHITECTURE "${OF_SYSTEM_ARCH}")
-        set(CPACK_RPM_PACKAGE_REQUIRES "libmad >= 0.15.1, libsndfile >= 1.0.25, gd >= 2.0.35, boost >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}")
+        set(CPACK_RPM_PACKAGE_REQUIRES "libmad >= 0.15.1, libsndfile >= 1.0.25, libid3tag >= 0.15.0, gd >= 2.0.35, boost >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}")
 
         set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${PACKAGE_RELEASE_NUMBER}.${OF_SYSTEM_ARCH}")
     endif()
@@ -247,7 +257,15 @@ add_executable(audiowaveform ${SRCS})
 #-------------------------------------------------------------------------------
 
 # Specify libraries to link against.
-set(LIBS ${LIBSNDFILE_LIBRARY} ${LIBGD_LIBRARY} ${LIBMAD_LIBRARY} ${LIBID3TAG_LIBRARY} ${Boost_LIBRARIES})
+set(
+    LIBS
+    ${LIBSNDFILE_LIBRARIES}
+    ${LIBGD_LIBRARIES}
+    ${LIBMAD_LIBRARIES}
+    ${LIBID3TAG_LIBRARIES}
+    ${Boost_LIBRARIES}
+)
+
 target_link_libraries(audiowaveform ${LIBS})
 
 #-------------------------------------------------------------------------------
