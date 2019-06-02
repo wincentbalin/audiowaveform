@@ -13,12 +13,11 @@ Waveform data files are saved in either binary format (.dat) or JSON (.json).
 Given an input waveform data file, **audiowaveform** can also render the audio
 waveform as a PNG image at a given time offset and zoom level.
 
-The waveform data is produced from an input stereo audio signal by first
-combining the left and right channels to produce a mono signal. The next stage
-is to compute the minimum and maximum sample values over groups of *N* input
-samples (where *N* is controlled by the `--zoom` command-line option), such that
-each *N* input samples produces one pair of minimum and maxmimum points in the
-output.
+The waveform data is produced from an input audio signal by first combining the
+input channels to produce a mono signal. The next stage is to compute the
+minimum and maximum sample values over groups of *N* input samples (where *N* is
+controlled by the `--zoom` command-line option), such that each *N* input
+samples produces one pair of minimum and maxmimum points in the output.
 
 ## Installation
 
@@ -176,11 +175,12 @@ CMAKE_INSTALL_PREFIX=...` option when invoking `cmake` above.
 | --------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
 |                 | `--help`                       | Show help message                                                                                             |
 | `-v`            | `--version`                    | Show version information                                                                                      |
-| `-i <filename>` | `--input-filename <filename>`  | Input mono or stereo audio (.wav or .mp3) or waveform data (.dat) file name                                   |
+| `-i <filename>` | `--input-filename <filename>`  | Input audio (.wav, .flac, .mp3, or .ogg) or waveform data (.dat) file name                                    |
 | `-o <filename>` | `--output-filename <filename>` | Output waveform data (.dat or .json), audio (.wav), or PNG image (.png) file name                             |
 | `-z <level>`    | `--zoom <zoom>`                | Zoom level (samples per pixel), default: 256. Not valid if `--end` or `--pixels-per-second` is also specified |
 |                 | `--pixels-per-second <zoom>`   | Zoom level (pixels per second), default: 100. Not valid if `--end` or `--zoom` is also specified              |
 | `-b <bits>`     | `--bits <bits>`                | Number of bits resolution when creating a waveform data file (either 8 or 16), default: 16                    |
+|                 | `--split-channels`             | Output files are multi-channel, not combined into a single waveform                                           |
 | `-s <seconds>`  | `--start <seconds>`            | Start time (seconds), default: 0                                                                              |
 | `-e <seconds>`  | `--end <seconds>`              | End time (seconds). Not valid if `--zoom` is also specified                                                   |
 | `-w <width>`    | `--width <width>`              | Width of output image (pixels), default: 800                                                                  |
@@ -208,6 +208,11 @@ per point with 8-bit resolution:
 
 Then, to create a PNG image of a waveform, either specify the zoom level, in
 samples per pixel, or the time region to render.
+
+To create a waveform data file containing multiple channels, rather than
+combining all channels into a single waveform:
+
+    $ audiowaveform -i test.mp3 -o test.dat -z 256 -b 8 --split-channels
 
 The following command creates a 1000x200 pixel PNG image from a waveform data
 file, at 50 pixels per second, starting at 5.0 seconds from the start of the

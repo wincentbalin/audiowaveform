@@ -1,3 +1,16 @@
+v1.3.3, 2018-12-11, Chris Needham <chris.needham@bbc.co.uk>
+
+  * Increase channel limit to eight
+
+v1.3.2, 2018-11-23, Chris Needham <chris.needham@bbc.co.uk>
+
+  * Fixed version 2 binary data format
+
+v1.3.1, 2018-11-21, Chris Needham <chris.needham@bbc.co.uk>
+
+  * Added --split-channels option to produce multi-channel output files
+  * Enabled static linking
+
 v1.2.2, 2018-06-23, Chris Needham <chris.needham@bbc.co.uk>
 
   * Fixed MinGW build
